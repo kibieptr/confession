@@ -1,0 +1,625 @@
+/* =========================================================================
+   DESIGN TOKENS
+   Palette: deep wine / aubergine jewel tones with a warm gold accent.
+   Deliberately avoiding the generic "baby pink + red heart" valentine look
+   in favour of something that reads as premium and editorial.
+   ========================================================================= */
+:root{
+  /* -- colour --------------------------------------------------------- */
+  --midnight:   #170b1c;   /* base background, near-black aubergine   */
+  --wine:       #3d1638;   /* mid gradient stop                        */
+  --wine-2:     #6b2049;   /* warm gradient stop                       */
+  --rose:       #e8a5c4;   /* dusty rose - glass tint / accents        */
+  --blush:      #ffd9e8;   /* soft light text highlight                */
+  --gold:       #d9b77d;   /* warm gold accent for CTAs                */
+  --gold-soft:  #f0dcb3;
+  --cream:      #faf3ec;   /* primary light text on dark backgrounds   */
+  --cream-dim:  #d8c9d3;   /* secondary/muted text                     */
+  --danger-soft:#e88b9a;
+
+  /* -- glass ------------------------------------------------------------ */
+  --glass-bg:      rgba(255, 246, 250, 0.08);
+  --glass-border:  rgba(255, 246, 250, 0.18);
+  --glass-shadow:  rgba(20, 5, 20, 0.45);
+
+  /* -- type --------------------------------------------------------- */
+  --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-ui:      'Quicksand', 'Segoe UI', sans-serif;
+
+  /* -- motion --------------------------------------------------------- */
+  --ease-soft: cubic-bezier(.22,.9,.32,1);
+  --dur-fast: .25s;
+  --dur-mid: .6s;
+  --dur-slow: 1.2s;
+}
+
+/* =========================================================================
+   RESET / BASE
+   ========================================================================= */
+*, *::before, *::after{ box-sizing: border-box; }
+
+html, body{
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body{
+  font-family: var(--font-ui);
+  color: var(--cream);
+  background: var(--midnight);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+button{ font-family: inherit; cursor: pointer; border: none; background: none; }
+input{ font-family: inherit; }
+a{ text-decoration: none; color: inherit; }
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+::selection{ background: var(--gold); color: var(--midnight); }
+
+/* =========================================================================
+   AMBIENT BACKGROUND
+   ========================================================================= */
+.bg-gradient{
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(125deg, var(--midnight) 0%, var(--wine) 45%, var(--wine-2) 75%, var(--midnight) 100%);
+  background-size: 300% 300%;
+  animation: gradientDrift 18s ease-in-out infinite;
+}
+
+@keyframes gradientDrift{
+  0%   { background-position: 0% 40%; }
+  50%  { background-position: 100% 60%; }
+  100% { background-position: 0% 40%; }
+}
+
+/* triggered on the big "yes" moment: warmer, brighter, faster drift */
+.bg-gradient.celebrate{
+  background: linear-gradient(125deg, var(--wine) 0%, var(--wine-2) 35%, var(--gold) 70%, var(--rose) 100%);
+  background-size: 300% 300%;
+  animation: gradientDrift 6s ease-in-out infinite;
+  transition: background 1.2s var(--ease-soft);
+}
+
+/* soft out-of-focus light orbs, purely decorative depth ("bokeh") */
+.bg-bokeh{
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(217,183,125,0.14) 0%, transparent 40%),
+    radial-gradient(circle at 85% 15%, rgba(232,165,196,0.12) 0%, transparent 38%),
+    radial-gradient(circle at 75% 80%, rgba(107,32,73,0.35) 0%, transparent 45%),
+    radial-gradient(circle at 20% 85%, rgba(217,183,125,0.10) 0%, transparent 40%);
+  filter: blur(4px);
+  animation: bokehPulse 12s ease-in-out infinite alternate;
+}
+
+@keyframes bokehPulse{
+  0%   { opacity: .75; transform: scale(1); }
+  100% { opacity: 1;   transform: scale(1.05); }
+}
+
+#cursorTrail{
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+#effectsCanvas{
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.floating-layer{
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.floating-item{
+  position: absolute;
+  bottom: -10%;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation-name: floatUp;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes floatUp{
+  0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+  8%   { opacity: .85; }
+  90%  { opacity: .6; }
+  100% { transform: translateY(-115vh) translateX(var(--drift, 30px)) rotate(360deg); opacity: 0; }
+}
+
+/* =========================================================================
+   SCREENS / SCENES  — one visible at a time, centred stage
+   ========================================================================= */
+.screen{
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  text-align: center;
+}
+
+.hidden{ display: none !important; }
+
+.scene-content{
+  max-width: 640px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+.scene-content--wide{ max-width: 720px; }
+
+/* scene enter/exit transition, applied via JS by toggling classes */
+.screen.scene-enter{
+  animation: sceneEnter var(--dur-slow) var(--ease-soft) both;
+}
+@keyframes sceneEnter{
+  from{ opacity: 0; transform: translateY(24px) scale(.985); }
+  to{ opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* =========================================================================
+   TYPOGRAPHY
+   ========================================================================= */
+.serif-title{
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  line-height: 1.15;
+  color: var(--cream);
+  margin: 0;
+  text-shadow: 0 2px 24px rgba(217,183,125,0.25);
+}
+
+.serif-title.small{ font-size: clamp(1.4rem, 4vw, 2rem); color: var(--gold-soft); }
+
+.subtitle{
+  font-size: 1.05rem;
+  color: var(--cream-dim);
+  margin: 0;
+  font-weight: 500;
+}
+
+.typewriter-container{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 3.2em;
+  width: 100%;
+}
+
+.typewriter-line{
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.25rem, 4.2vw, 2rem);
+  line-height: 1.55;
+  color: var(--cream);
+  margin: 0;
+  white-space: pre-wrap;
+  text-shadow: 0 2px 20px rgba(217,183,125,0.3);
+  opacity: 0;
+  transform: scale(0.92);
+  animation: lineEnter var(--dur-mid) var(--ease-soft) forwards;
+}
+
+@keyframes lineEnter{
+  to{ opacity: 1; transform: scale(1); }
+}
+
+.typewriter-line.typing::after{
+  content: '';
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--gold);
+  margin-left: 3px;
+  vertical-align: middle;
+  animation: blink 0.9s steps(1) infinite;
+}
+
+@keyframes blink{
+  50%{ opacity: 0; }
+}
+
+.celebration-text{
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 4vw, 1.7rem);
+  color: var(--blush);
+  margin: 0;
+}
+
+#celebrationLines{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.big-yeay{
+  font-size: clamp(2.6rem, 9vw, 4.4rem);
+  background: linear-gradient(90deg, var(--gold-soft), var(--rose), var(--gold-soft));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shimmer 3.5s linear infinite, popIn .8s var(--ease-soft);
+}
+
+@keyframes shimmer{
+  to{ background-position: 200% center; }
+}
+@keyframes popIn{
+  0%{ transform: scale(.6); opacity: 0; }
+  60%{ transform: scale(1.08); opacity: 1; }
+  100%{ transform: scale(1); }
+}
+
+/* =========================================================================
+   GLASSMORPHISM CARD
+   ========================================================================= */
+.glass-card{
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.12);
+  padding: 44px 36px;
+  max-width: 420px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.name-card.shake{
+  animation: shakeCard .5s var(--ease-soft);
+}
+@keyframes shakeCard{
+  0%, 100%{ transform: translateX(0); }
+  20%{ transform: translateX(-10px); }
+  40%{ transform: translateX(8px); }
+  60%{ transform: translateX(-6px); }
+  80%{ transform: translateX(4px); }
+}
+
+.name-input{
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.06);
+  color: var(--cream);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color var(--dur-fast) var(--ease-soft), box-shadow var(--dur-fast) var(--ease-soft);
+}
+.name-input::placeholder{ color: var(--cream-dim); }
+.name-input:focus{
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(217,183,125,0.2);
+}
+
+.error-text{
+  color: var(--danger-soft);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.rename-btn{
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: var(--cream-dim);
+  opacity: 0.8;
+  transition: opacity var(--dur-fast);
+}
+.rename-btn:hover{ opacity: 1; text-decoration: underline; }
+
+.rename-fixed{
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 50;
+  font-size: 0.8rem;
+  color: var(--cream-dim);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--glass-border);
+  padding: 7px 14px;
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  transition: opacity var(--dur-fast), background var(--dur-fast);
+  opacity: 0.75;
+}
+.rename-fixed:hover{ opacity: 1; background: rgba(255,255,255,0.12); }
+
+/* =========================================================================
+   BUTTONS
+   ========================================================================= */
+.btn{
+  position: relative;
+  padding: 14px 30px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  transition: transform var(--dur-fast) var(--ease-soft), box-shadow var(--dur-fast) var(--ease-soft), background var(--dur-fast);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-primary{
+  background: linear-gradient(135deg, var(--gold), var(--rose));
+  color: var(--midnight);
+  box-shadow: 0 10px 30px rgba(217,183,125,0.35);
+}
+.btn-primary:hover{
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 14px 36px rgba(217,183,125,0.5);
+}
+.btn-primary:active{ transform: translateY(0) scale(.98); }
+
+.btn-ghost{
+  background: rgba(255,255,255,0.08);
+  color: var(--cream);
+  border: 1px solid var(--glass-border);
+}
+.btn-ghost:hover{ background: rgba(255,255,255,0.14); }
+
+.btn-yes{
+  background: linear-gradient(135deg, var(--gold), var(--rose));
+  color: var(--midnight);
+  box-shadow: 0 10px 30px rgba(217,183,125,0.4);
+  font-size: 1.05rem;
+  transition: transform .18s var(--ease-soft), box-shadow .18s var(--ease-soft), font-size .18s var(--ease-soft);
+}
+
+.btn-no{
+  background: rgba(255,255,255,0.08);
+  color: var(--cream-dim);
+  border: 1px solid var(--glass-border);
+  position: relative;
+  touch-action: none;
+  transition: transform .35s var(--ease-soft), background .2s, left .35s var(--ease-soft), top .35s var(--ease-soft);
+}
+
+/* once the visitor gets close, the button escapes into fixed positioning
+   so it can jump anywhere on screen */
+.btn-no.dodging{
+  position: fixed;
+  z-index: 55;
+}
+
+.question-buttons{
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 12px;
+  min-height: 120px;
+}
+
+.btn-fade{
+  animation: fadeInUp var(--dur-mid) var(--ease-soft) both;
+}
+@keyframes fadeInUp{
+  from{ opacity: 0; transform: translateY(14px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+
+/* ripple click feedback, span injected via JS */
+.ripple{
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  transform: scale(0);
+  animation: rippleAnim .6s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes rippleAnim{
+  to{ transform: scale(3); opacity: 0; }
+}
+
+.final-buttons{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+/* =========================================================================
+   HEARTBEAT
+   ========================================================================= */
+.heartbeat{
+  animation: heartbeat 1.6s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes heartbeat{
+  0%, 100%{ transform: scale(1); }
+  15%{ transform: scale(1.06); }
+  30%{ transform: scale(1); }
+  45%{ transform: scale(1.04); }
+  60%{ transform: scale(1); }
+}
+
+/* =========================================================================
+   TIMELINE  — "strand of light" signature element
+   A vertical glowing thread connecting soft glass beads, each holding
+   one milestone. Chosen because the content genuinely is a sequence
+   (a relationship timeline), so the ordered structure carries meaning.
+   ========================================================================= */
+.timeline{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  padding-left: 34px;
+  width: 100%;
+}
+
+.timeline::before{
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--gold), var(--rose), var(--gold));
+  opacity: 0.5;
+  border-radius: 2px;
+}
+
+.timeline-item{
+  position: relative;
+  padding: 14px 0 14px 20px;
+  text-align: left;
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: opacity .6s var(--ease-soft), transform .6s var(--ease-soft);
+}
+.timeline-item.visible{
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.timeline-item::before{
+  content: '';
+  position: absolute;
+  left: -34px;
+  top: 18px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--gold-soft), var(--gold));
+  box-shadow: 0 0 0 4px rgba(217,183,125,0.15), 0 0 16px rgba(217,183,125,0.5);
+}
+
+.timeline-item .t-icon{
+  font-size: 1.2rem;
+  margin-right: 8px;
+}
+.timeline-item .t-label{
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--cream);
+}
+
+/* =========================================================================
+   POPUP (the "no button clicked" surprise message)
+   ========================================================================= */
+.popup{
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 28px 34px;
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  text-align: center;
+  z-index: 60;
+  box-shadow: 0 20px 60px var(--glass-shadow);
+  animation: popupShow .35s var(--ease-soft) both;
+}
+@keyframes popupShow{
+  from{ opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+  to{ opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* =========================================================================
+   LOADING SCREEN
+   ========================================================================= */
+.loading-screen{ gap: 18px; }
+
+.loading-heart{
+  font-size: 3rem;
+  animation: heartbeat 1.4s ease-in-out infinite;
+}
+
+.loading-text{
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--cream-dim);
+}
+
+/* =========================================================================
+   AUDIO UNLOCK OVERLAY
+   ========================================================================= */
+.audio-unlock{
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(10, 4, 12, 0.72);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+.audio-unlock__icon{
+  font-size: 2.6rem;
+  animation: heartbeat 1.4s ease-in-out infinite;
+}
+.audio-unlock p{
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--cream);
+  font-size: 1.1rem;
+}
+
+/* =========================================================================
+   RESPONSIVE
+   ========================================================================= */
+@media (max-width: 480px){
+  .glass-card{ padding: 34px 24px; border-radius: 20px; }
+  .btn{ padding: 13px 24px; font-size: 0.95rem; }
+  .question-buttons{ gap: 14px; }
+  .timeline{ padding-left: 28px; }
+}
+
+@media (min-width: 1024px){
+  .scene-content{ max-width: 720px; }
+}
