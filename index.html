@@ -1,118 +1,138 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-<title>Untuk Kamu ❤️</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
+    />
+    <title>Untuk Kamu Sayangku ❤️</title>
 
-<!-- Fonts: Cormorant Garamond (display/serif, romantic editorial feel) + Quicksand (soft rounded UI face) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Fonts: Cormorant Garamond (display/serif, romantic editorial feel) + Quicksand (soft rounded UI face) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Quicksand:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- ================= AMBIENT BACKGROUND LAYERS (behind everything) ================= -->
+    <div class="bg-gradient" aria-hidden="true"></div>
+    <div class="bg-bokeh" aria-hidden="true"></div>
+    <canvas id="cursorTrail" aria-hidden="true"></canvas>
+    <div id="floatingLayer" class="floating-layer" aria-hidden="true"></div>
 
-  <!-- ================= AMBIENT BACKGROUND LAYERS (behind everything) ================= -->
-  <div class="bg-gradient" aria-hidden="true"></div>
-  <div class="bg-bokeh" aria-hidden="true"></div>
-  <canvas id="cursorTrail" aria-hidden="true"></canvas>
-  <div id="floatingLayer" class="floating-layer" aria-hidden="true"></div>
-
-  <!-- ================= AUDIO UNLOCK OVERLAY (shown only if autoplay blocked) ================= -->
-  <div id="audioUnlock" class="audio-unlock hidden">
-    <div class="audio-unlock__icon">❤️</div>
-    <p id="audioUnlockText">Tap untuk Memulai</p>
-  </div>
-
-  <!-- Small persistent button, visible during scenes 1-5, lets the user reset the saved name -->
-  <button id="renameFixedBtn" class="rename-fixed hidden"></button>
-
-  <!-- ================= LOADING SCREEN ================= -->
-  <section id="loadingScreen" class="screen loading-screen">
-    <div class="loading-heart">❤️</div>
-    <p id="loadingText" class="loading-text"></p>
-  </section>
-
-  <!-- ================= NAME INPUT SCREEN ================= -->
-  <section id="nameScreen" class="screen name-screen hidden">
-    <div class="glass-card name-card" id="nameCard">
-      <h1 id="nameTitle" class="serif-title"></h1>
-      <p id="nameSubtitle" class="subtitle"></p>
-
-      <input
-        id="nameInput"
-        type="text"
-        class="name-input"
-        maxlength="30"
-        autocomplete="off"
-      />
-      <p id="nameError" class="error-text hidden"></p>
-
-      <button id="startBtn" class="btn btn-primary"></button>
+    <!-- ================= AUDIO UNLOCK OVERLAY (shown only if autoplay blocked) ================= -->
+    <div id="audioUnlock" class="audio-unlock hidden">
+      <div class="audio-unlock__icon">❤️</div>
+      <p id="audioUnlockText">Tap untuk Memulai</p>
     </div>
-  </section>
 
-  <!-- ================= SCENE 1 : OPENING ================= -->
-  <section id="scene1" class="screen scene hidden">
-    <div class="scene-content">
-      <div id="typewriter1" class="typewriter-container"></div>
-      <button id="scene1Next" class="btn btn-primary btn-fade hidden"></button>
-    </div>
-  </section>
+    <!-- Small persistent button, visible during scenes 1-5, lets the user reset the saved name -->
+    <button id="renameFixedBtn" class="rename-fixed hidden"></button>
 
-  <!-- ================= SCENE 2 : TIMELINE ================= -->
-  <section id="scene2" class="screen scene hidden">
-    <div class="scene-content scene-content--wide">
-      <h2 id="timelineTitle" class="serif-title small"></h2>
-      <div id="timeline" class="timeline"></div>
-      <button id="scene2Next" class="btn btn-primary btn-fade hidden"></button>
-    </div>
-  </section>
+    <!-- ================= LOADING SCREEN ================= -->
+    <section id="loadingScreen" class="screen loading-screen">
+      <div class="loading-heart">❤️</div>
+      <p id="loadingText" class="loading-text"></p>
+    </section>
 
-  <!-- ================= SCENE 3 : CONFESSION ================= -->
-  <section id="scene3" class="screen scene hidden">
-    <div class="scene-content">
-      <div id="typewriter3" class="typewriter-container"></div>
-      <button id="scene3Next" class="btn btn-primary btn-fade hidden"></button>
-    </div>
-  </section>
+    <!-- ================= NAME INPUT SCREEN ================= -->
+    <section id="nameScreen" class="screen name-screen hidden">
+      <div class="glass-card name-card" id="nameCard">
+        <h1 id="nameTitle" class="serif-title"></h1>
+        <p id="nameSubtitle" class="subtitle"></p>
 
-  <!-- ================= SCENE 4 : THE QUESTION ================= -->
-  <section id="scene4" class="screen scene hidden">
-    <div class="scene-content">
-      <p id="scene4Name" class="serif-title small"></p>
-      <h1 id="questionText" class="serif-title heartbeat"></h1>
+        <input
+          id="nameInput"
+          type="text"
+          class="name-input"
+          maxlength="30"
+          autocomplete="off"
+        />
+        <p id="nameError" class="error-text hidden"></p>
 
-      <div class="question-buttons">
-        <button id="yesBtn" class="btn btn-yes"></button>
-        <button id="noBtn" class="btn btn-no"></button>
+        <button id="startBtn" class="btn btn-primary"></button>
       </div>
-    </div>
+    </section>
 
-    <!-- Small popup shown when the "no" button is somehow clicked -->
-    <div id="noPopup" class="popup hidden">
-      <p id="noPopupText"></p>
-    </div>
-  </section>
-
-  <!-- ================= SCENE 5 : CELEBRATION / FINAL ================= -->
-  <section id="scene5" class="screen scene hidden">
-    <div class="scene-content">
-      <h1 id="celebrationTitle" class="serif-title big-yeay"></h1>
-      <div id="celebrationLines"></div>
-
-      <div class="final-buttons">
-        <a id="waBtn" class="btn btn-primary" href="#" target="_blank" rel="noopener"></a>
-        <button id="restartBtn" class="btn btn-ghost"></button>
+    <!-- ================= SCENE 1 : OPENING ================= -->
+    <section id="scene1" class="screen scene hidden">
+      <div class="scene-content">
+        <div id="typewriter1" class="typewriter-container"></div>
+        <button
+          id="scene1Next"
+          class="btn btn-primary btn-fade hidden"
+        ></button>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Confetti / heart-rain canvas, drawn above scenes during celebratory moments -->
-  <canvas id="effectsCanvas" aria-hidden="true"></canvas>
+    <!-- ================= SCENE 2 : TIMELINE ================= -->
+    <section id="scene2" class="screen scene hidden">
+      <div class="scene-content scene-content--wide">
+        <h2 id="timelineTitle" class="serif-title small"></h2>
+        <div id="timeline" class="timeline"></div>
+        <button
+          id="scene2Next"
+          class="btn btn-primary btn-fade hidden"
+        ></button>
+      </div>
+    </section>
 
-  <script src="script.js"></script>
-</body>
+    <!-- ================= SCENE 3 : CONFESSION ================= -->
+    <section id="scene3" class="screen scene hidden">
+      <div class="scene-content">
+        <div id="typewriter3" class="typewriter-container"></div>
+        <button
+          id="scene3Next"
+          class="btn btn-primary btn-fade hidden"
+        ></button>
+      </div>
+    </section>
+
+    <!-- ================= SCENE 4 : THE QUESTION ================= -->
+    <section id="scene4" class="screen scene hidden">
+      <div class="scene-content">
+        <p id="scene4Name" class="serif-title small"></p>
+        <h1 id="questionText" class="serif-title heartbeat"></h1>
+
+        <div class="question-buttons">
+          <button id="yesBtn" class="btn btn-yes"></button>
+          <button id="noBtn" class="btn btn-no"></button>
+        </div>
+      </div>
+
+      <!-- Small popup shown when the "no" button is somehow clicked -->
+      <div id="noPopup" class="popup hidden">
+        <p id="noPopupText"></p>
+      </div>
+    </section>
+
+    <!-- ================= SCENE 5 : CELEBRATION / FINAL ================= -->
+    <section id="scene5" class="screen scene hidden">
+      <div class="scene-content">
+        <h1 id="celebrationTitle" class="serif-title big-yeay"></h1>
+        <div id="celebrationLines"></div>
+
+        <div class="final-buttons">
+          <a
+            id="waBtn"
+            class="btn btn-primary"
+            href="#"
+            target="_blank"
+            rel="noopener"
+          ></a>
+          <button id="restartBtn" class="btn btn-ghost"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Confetti / heart-rain canvas, drawn above scenes during celebratory moments -->
+    <canvas id="effectsCanvas" aria-hidden="true"></canvas>
+
+    <script src="script.js"></script>
+  </body>
 </html>

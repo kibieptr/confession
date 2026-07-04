@@ -1,20 +1,14 @@
-/* =========================================================================
-   CONFIG
-   Every piece of copy, the WhatsApp number, and the music file live here.
-   To reuse this page for someone else, only this object needs to change —
-   nothing below it should need to be touched.
-   ========================================================================= */
 const CONFIG = {
-  whatsapp: "6281234567890", // WhatsApp number, country code, no "+" or leading 0
+  whatsapp: "6285188915925", // WhatsApp number, country code, no "+" or leading 0
   music: "assets/audio/audio.mp3",
-  volume: 0.5,
+  volume: 0.3,
   loop: true,
   autoplay: true,
 
   storageKey: "confessionName", // localStorage key used to remember the visitor's name
 
   texts: {
-    loading: "Menyiapkan sesuatu yang spesial...",
+    loading: "Menyiapkan sesuatu yang spesial... ❤️",
 
     namePage: {
       title: "Sebelum kita mulai... ❤️",
@@ -28,56 +22,58 @@ const CONFIG = {
     audioUnlockText: "Tap untuk Memulai",
 
     opening: [
-      "Hai, {nama} ❤️",
+      "Hai, {nama} 😊",
       "Aku punya sesuatu yang ingin aku sampaikan...",
-      "Selama ini...",
-      "Semakin lama aku mengenalmu...",
-      "Aku semakin nyaman.",
+      "Walaupun kita baru kenal beberapa hari...",
+      "Tapi aku senang bisa ngobrol dan kenal sama kamu.",
+      "Semoga kamu suka dengan kejutan kecil ini ❤️",
     ],
 
-    timelineTitle: "Perjalanan Kita",
+    timelineTitle: "Cerita Singkat Kita",
     timeline: [
-      { icon: "❤️", label: "Awal Kenal" },
-      { icon: "💬", label: "Mulai Dekat" },
-      { icon: "😊", label: "Banyak Cerita" },
-      { icon: "🥰", label: "Semakin Nyaman" },
-      { icon: "❤️", label: "Sekarang" },
+      { icon: "👋", label: "Pertama Kenal" },
+      { icon: "💬", label: "Mulai Chat" },
+      { icon: "😄", label: "Semakin Seru" },
+      { icon: "❤️", label: "Mulai Suka" },
+      { icon: "✨", label: "Hari Ini" },
     ],
 
     confession: [
       "{nama}...",
-      "Mungkin...",
-      "Aku bukan orang yang sempurna.",
-      "Aku juga bukan orang yang paling hebat.",
-      "Tapi...",
-      "Aku ingin menjadi seseorang yang selalu ada buat kamu.",
-      "Aku ingin menjadi tempat kamu bercerita.",
-      "Aku ingin tumbuh bersama kamu.",
-      "Aku ingin membuat banyak kenangan bersama kamu.",
+      "Mungkin ini terdengar cukup cepat...",
+      "Tapi aku ingin jujur sama perasaanku.",
+      "Setiap ngobrol sama kamu rasanya selalu menyenangkan.",
+      "Aku nyaman mengenal kamu.",
+      "Aku ingin mengenal kamu lebih jauh lagi.",
+      "Kalau kamu bersedia...",
+      "Aku ingin menjalani semuanya bersama kamu.",
+      "Boleh nggak aku jadi orang yang spesial buat kamu? ❤️",
     ],
 
     question: {
       heading: "Maukah Kamu Menjadi Pacarku? ❤️",
-      yesLabel: "❤️ Iya Mau",
+      yesLabel: "❤️ Iya, Aku Mau",
       noLabel: "💔 Tidak",
+
       noEvasiveTexts: [
-        "Yakin?",
-        "Masa sih?",
-        "Jangan dong 🥺",
-        "Klik yang satunya aja ❤️",
-        "Pikir lagi ya",
-        "Aku sedih 😭",
+        "Yakin nih? 🥺",
+        "Coba dipikir lagi...",
+        "Kasih aku kesempatan ya ❤️",
+        "Aku serius loh 😊",
+        "Sekali lagi ya...",
+        "Semoga jawabannya berubah ❤️",
       ],
-      popupText: "Hehe...<br>Sebenarnya pilihanmu cuma satu ❤️",
+
+      popupText: "Hehe...<br>Aku tetap berharap jawabanmu adalah <b>Iya</b> ❤️",
     },
 
     celebration: {
-      title: "YEAAYYY ❤️",
+      title: "YEAAYYY!! ❤️",
       lines: [
-        "Aku Senang Banget!!",
-        "Mulai hari ini...",
+        "Makasih udah nerima aku 🥹",
+        "Aku bakal berusaha jadi yang terbaik buat kamu.",
         "{nama}...",
-        "Kamu resmi menjadi pacarku ❤️",
+        "Mulai hari ini, semoga kita bisa saling menjaga dan bahagia bareng ❤️",
       ],
     },
 
@@ -88,7 +84,8 @@ const CONFIG = {
       restart: "🔄 Ulangi",
     },
 
-    whatsappMessage: "Hai, aku mau jadi pacarmu ❤️",
+    whatsappMessage:
+      "Hai ❤️ Aku mau jadi pacarmu. Mulai hari ini kita resmi yaa 🥰",
   },
 };
 
